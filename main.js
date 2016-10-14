@@ -7,6 +7,7 @@ var mainState = {
         // That's where we load the game's assets
         // Load the image
         game.load.image("camel","camel.jpg");
+        game.load.image('cracker','cracker.png')
     }
     , create: function () {
         // This function is called after the 'preload' function 
@@ -16,9 +17,13 @@ var mainState = {
         this.player = game.add.sprite(300, 300, "camel");
         this.player.scale.setTo(.5,.5);
         
+        this.cracker = game.add.group() ;
+        this.cracker.enablebody = true;
+        this.cracker.createMultiple (10, 'cracker');
         game.physics.arcade.enable(this.player);
-        this.player.body.gravity.y =300;
+        this.player.body.gravity.y = 300;
         this.player.body.collideWorldBounds = true;
+        game.time.events.loop (220, this.addCracker,this);
     }
     , update: function () {
         this.player.body.velocity.x= 0;
@@ -33,6 +38,23 @@ var mainState = {
         }
         // This contains Game Logic 
     }
+    ,addCracker: function(){ 
+        var cracker = this.cracker.getFirstDead();
+        
+        if (!cracker) { 
+            return;
+        }
+        
+        cracker.scale.setTo(.2,.2);
+        cracker.anchor.setTo(0.5,1);
+        cracker.reset( game.rnd.pick([ game.width/2,0]),0);
+        cracker.body.gravity.y = 500;
+        cracker.body.velocity.x = 100 *game.rnd.pick([-2,2]);
+        cracker.body.bounce.x = 1;
+        cracker.checkWorldBounds = true;
+        cracker.outOfBoundsKill = true; 
+    }
+    
 };
 // We initialize Phaser
 var game = new Phaser.Game(800, 800, Phaser.AUTO, '');
